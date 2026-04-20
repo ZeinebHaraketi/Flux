@@ -9,38 +9,74 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SkillsNewRouteImport } from './routes/skills.new'
+import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
 
+const SkillsRoute = SkillsRouteImport.update({
+  id: '/skills',
+  path: '/skills',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SkillsNewRoute = SkillsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => SkillsRoute,
+} as any)
+const SignInSplatRoute = SignInSplatRouteImport.update({
+  id: '/sign-in/$',
+  path: '/sign-in/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/skills': typeof SkillsRouteWithChildren
+  '/sign-in/$': typeof SignInSplatRoute
+  '/skills/new': typeof SkillsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/skills': typeof SkillsRouteWithChildren
+  '/sign-in/$': typeof SignInSplatRoute
+  '/skills/new': typeof SkillsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/skills': typeof SkillsRouteWithChildren
+  '/sign-in/$': typeof SignInSplatRoute
+  '/skills/new': typeof SkillsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/skills' | '/sign-in/$' | '/skills/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/skills' | '/sign-in/$' | '/skills/new'
+  id: '__root__' | '/' | '/skills' | '/sign-in/$' | '/skills/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SkillsRoute: typeof SkillsRouteWithChildren
+  SignInSplatRoute: typeof SignInSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/skills': {
+      id: '/skills'
+      path: '/skills'
+      fullPath: '/skills'
+      preLoaderRoute: typeof SkillsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +84,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/skills/new': {
+      id: '/skills/new'
+      path: '/new'
+      fullPath: '/skills/new'
+      preLoaderRoute: typeof SkillsNewRouteImport
+      parentRoute: typeof SkillsRoute
+    }
+    '/sign-in/$': {
+      id: '/sign-in/$'
+      path: '/sign-in/$'
+      fullPath: '/sign-in/$'
+      preLoaderRoute: typeof SignInSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface SkillsRouteChildren {
+  SkillsNewRoute: typeof SkillsNewRoute
+}
+
+const SkillsRouteChildren: SkillsRouteChildren = {
+  SkillsNewRoute: SkillsNewRoute,
+}
+
+const SkillsRouteWithChildren =
+  SkillsRoute._addFileChildren(SkillsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SkillsRoute: SkillsRouteWithChildren,
+  SignInSplatRoute: SignInSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
