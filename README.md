@@ -53,6 +53,8 @@ npm run check
 ## Setting up Clerk
 
 - Set the `VITE_CLERK_PUBLISHABLE_KEY` in your `.env.local`.
+- Local development commonly uses `pk_test_...` / `sk_test_...` Clerk keys, which will trigger Clerk's development-key warning in the browser. That warning is expected in development.
+- For deployed environments, switch to live Clerk keys so production does not boot with development credentials.
 
 
 ## Shadcn
